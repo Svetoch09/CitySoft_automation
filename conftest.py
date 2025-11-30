@@ -15,29 +15,30 @@ from pages.LoginPage import LoginPage
 from pages.MapPage import MapPage
 
 load_dotenv()
-BASE_URL = os.getenv("BASE_URL")
-AUTH_URL = os.getenv("AUTH_URL_BASE")
-TEST_LOCATION = os.getenv("TEST_LOCATION")
 
 
 @pytest.fixture(scope="session")
-def base_url() -> str:
-    if not BASE_URL:
+def map_url() -> str:
+    m_url = os.getenv("BASE_URL")
+    if not m_url:
         pytest.fail("Переменная окружения BASE_URL не установлена.")
-    return BASE_URL
+    return m_url
 
 
 @pytest.fixture(scope="session")
 def auth_url() -> str:
-    if not AUTH_URL:
-        pytest.fail("Переменная окружения AUTH_URL_BASE не установлена.")
-    return AUTH_URL
+    a_url = os.getenv("AUTH_URL")
+    if not a_url:
+        pytest.fail("Переменная окружения AUTH_URL не установлена.")
+    return a_url
+
 
 @pytest.fixture(scope="session")
 def test_location() -> str:
-    if not TEST_LOCATION:
+    t_location = os.getenv("TEST_LOCATION")
+    if not t_location:
         pytest.fail("Переменная окружения TEST_LOCATION не установлена.")
-    return TEST_LOCATION
+    return t_location
 
 
 @pytest.fixture(scope="session")
@@ -70,7 +71,6 @@ def driver(request) -> WebDriver:
     # Получаем имя браузера из опции --browser
     driver_name = request.config.getoption("--browser").lower()
 
-    # Логика инициализации
     if driver_name == "chrome":
         chrome_options = ChromeOptions()
         #chrome_options.add_argument("--headless=new")
@@ -85,50 +85,48 @@ def driver(request) -> WebDriver:
         }
         chrome_options.add_experimental_option("prefs", prefs)
 
-        driver = webdriver.Chrome(
+        driver_instance = webdriver.Chrome(
             service=ChromeService(ChromeDriverManager().install()),
             options=chrome_options)
-    elif driver_name == "ff" or driver_name == "firefox":
-        firefox_options = FirefoxOptions()  # pytest --browser=ff
-        #firefox_options.add_argument("-headless")
-        firefox_options.set_preference("signon.rememberSignons", False)
-        driver = webdriver.Firefox(
+
+    elif driver_name in ["ff", "firefox"]:
+        ff_options = FirefoxOptions()  # pytest --browser=ff
+        # ff_options.add_argument("-headless")
+        ff_options.set_preference("signon.rememberSignons", False)
+        driver_instance = webdriver.Firefox(
             service=FirefoxService(GeckoDriverManager().install()),
-            options=firefox_options)
+            options=ff_options)
     else:
         raise ValueError(f"Браузер '{driver_name}' не поддерживается.")
 
-    # Общие настройки
-    driver.maximize_window()
-    driver.implicitly_wait(5)
+    driver_instance.maximize_window()
+    driver_instance.implicitly_wait(5)
 
-    # Возврат драйвера и Teardown
-    yield driver
-    driver.quit()
+    yield driver_instance
+    driver_instance.quit()
 
 
 @pytest.fixture(scope="function")
-def logged_in_map_page(driver, base_url, user_credentials) -> MapPage:
+def logged_in_map_page(driver, map_url, user_credentials) -> MapPage:
     """
     Вход в систему, переходит на MapPage и возвращает
     экземпляр MapPage, готовый к тестированию.
     Зависит от фиксатур: driver, base_url, user_credentials.
     """
     username, password = user_credentials
-    login_page = LoginPage(driver, base_url)
+    login_page = LoginPage(driver, map_url)
     login_page.open()
     login_page.login(username, password)
-    return MapPage(driver)
+    login_page.wait_and_check_url(map_url)
+    return MapPage(driver, map_url)
 
 
 @pytest.fixture(scope="function")
-def location_selected_map_page(logged_in_map_page) -> MapPage:
+def location_selected_map_page(logged_in_map_page, test_location) -> MapPage:
     """
         Выполняет вход, выбирает локацию и возвращает MapPage.
     """
-    location_for_tests = os.getenv("TEST_LOCATION")
-
     map_page = logged_in_map_page
-    map_page.input_location(location_for_tests)
-    map_page.check_location_is_found(location_for_tests)
+    map_page.input_location(test_location)
+    map_page.check_location_is_found(test_location)
     return map_page
