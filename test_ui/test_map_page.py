@@ -1,0 +1,116 @@
+import allure
+import pytest
+from data.checkbox_data import ALL_CHECKBOX_DATA
+
+ALL_MAIN_CHECKBOXES = list(ALL_CHECKBOX_DATA.keys())
+DTP_CHILDREN_CHECKBOXES = ALL_CHECKBOX_DATA["DTP"]["children"]
+AOU_CHILDREN_RADIO = ALL_CHECKBOX_DATA["AOU"]["children"]
+
+
+@allure.parent_suite("UI tests")
+@allure.suite("Map page")
+@allure.description("Work with map page")
+class TestMapPage:
+
+    @allure.id("Map-1")
+    @allure.feature("Ввод локации в поле поиска")
+    @allure.title("Ввод локации")
+    @allure.description(""" Ввод локации в поле поиска""")
+    @allure.severity("CRITICAL")
+    @pytest.mark.parametrize("location", ["Нижний Новгород"])
+    @pytest.mark.positive
+    def test_positive_location(self, logged_in_map_page, location):
+        map_page = logged_in_map_page
+        map_page.input_location(location)
+        map_page.check_location_is_found(location)
+
+    @allure.id("Map-2")
+    @allure.feature("Ввод несуществующей локации в поле поиска")
+    @allure.title("Ввод несуществующей локации")
+    @allure.description(""" Ввод несуществующей локации в поле поиска""")
+    @allure.severity("MINOR")
+    @pytest.mark.parametrize("not_exist_location", ["Самара"])
+    @pytest.mark.negative
+    def test_negative_location(self, logged_in_map_page, not_exist_location):
+        map_page = logged_in_map_page
+        map_page.input_location(not_exist_location)
+        map_page.check_location_is_not_found(not_exist_location)
+
+    @allure.id("Map-3")
+    @allure.feature("Фильтр 'ДТП и АОУ'")
+    @allure.title("Открытие меню фильтра 'ДТП и АОУ'")
+    @allure.description("""""")
+    @allure.severity("CRITICAL")
+    @pytest.mark.positive
+    def test_open_dtp_aou_menu(self, location_selected_map_page):
+        map_page = location_selected_map_page
+        map_page.open_dtp_aou_menu()
+        map_page.check_dtp_aou_menu_is_visible()
+
+    @allure.id("Map-4")
+    @allure.feature("Включение чекбоксов ДТП и АОУ")
+    @allure.title("Фильтры ДТП и АОУ")
+    @allure.description("""Включение чекбоксов ДТП и АОУ""")
+    @pytest.mark.parametrize("checkbox_name", ALL_MAIN_CHECKBOXES)
+    @allure.severity("CRITICAL")
+    @pytest.mark.positive
+    def test_turn_on_dtp_and_aou(self, location_selected_map_page, checkbox_name):
+        data = ALL_CHECKBOX_DATA[checkbox_name]
+
+        switch_locator = data["main_locator"]
+        check_locator = data["check_locator"]
+        attribute_name = data["attribute_name"]
+
+        map_page = location_selected_map_page
+        map_page.open_dtp_aou_menu()
+        map_page.turn_on_checkbox(switch_locator)
+        map_page.check_attribute_is_true(check_locator, attribute_name)
+
+    @allure.id("Map-5")
+    @allure.feature("Фильтры: ДТП")
+    @allure.title("Проверка включения дочернего фильтра ДТП: {child_data[name]}")
+    @allure.description("""Включение чекбоксов ДТП""")
+    @pytest.mark.parametrize("child_data", DTP_CHILDREN_CHECKBOXES)
+    @allure.severity("CRITICAL")
+    @pytest.mark.positive
+    def test_turn_on_checkbox_inside_dtp(self, location_selected_map_page, child_data):
+        data = ALL_CHECKBOX_DATA["DTP"]
+        switcher_locator = data["main_locator"]
+
+        map_page = location_selected_map_page
+        map_page.open_dtp_aou_menu()
+        map_page.turn_on_checkbox(switcher_locator)
+
+        child_name = child_data["name"]
+        child_locator = child_data["locator"]
+        child_attribute_name = "data-p-checked"
+
+        map_page.turn_on_checkbox(child_locator)
+        map_page.check_attribute_is_true(child_locator, child_attribute_name)
+
+        print(f"✅ Включен дочерний чекбокс: {child_name}")
+
+    @allure.id("Map-6")
+    @allure.feature("Фильтры: АОУ")
+    @allure.title("Проверка включения дочерних фильтров АОУ: {child_data[name]}")
+    @allure.description("""Включение радиобаттон АОУ""")
+    @pytest.mark.parametrize("child_data", AOU_CHILDREN_RADIO)
+    @allure.severity("NORMAL")
+    @pytest.mark.positive
+    def test_turn_on_radio_btn_inside_aou(self, location_selected_map_page, child_data):
+        data = ALL_CHECKBOX_DATA["AOU"]
+        switcher_locator = data["main_locator"]
+
+        map_page = location_selected_map_page
+        map_page.open_dtp_aou_menu()
+        map_page.turn_on_checkbox(switcher_locator)
+
+        child_name = child_data["name"]
+        child_locator = child_data["locator"]
+        child_check_locator = child_data["check_locator"]
+        child_attribute_name = "aria-checked"
+
+        map_page.turn_on_checkbox(child_locator)
+        map_page.check_attribute_is_true(child_check_locator, child_attribute_name)
+
+        print(f"✅ Включен радиобаттон: {child_name}")

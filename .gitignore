@@ -61,7 +61,7 @@ pyrightconfig.json # LSP config
 # 3. TESTING / CACHE / LOGS
 # ----------------------------------------------------------------------
 
-# Unit test / coverage reports
+# Unit test_ui / coverage reports
 htmlcov/
 .tox/
 .nox/

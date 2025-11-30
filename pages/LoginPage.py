@@ -17,7 +17,7 @@ class LoginPage:
         self.base_url = base_url
         self.waiter = WebDriverWait(self.driver, 10, 0.5)
 
-    @allure.step("Open the shop page")
+    @allure.step("Open login page")
     def open(self) -> None:
         self.driver.get(self.base_url)
 

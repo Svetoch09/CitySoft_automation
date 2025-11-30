@@ -1,5 +1,6 @@
 import allure
 import logging
+
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
@@ -38,7 +39,7 @@ class MapPage:
     # ----------------------------------------------------------------------
 
     @allure.step("Check location")
-    def check_location_is_found(self, location_name: str):
+    def check_location_is_found(self, location_name: str) -> str:
         """
         Проверяет, что в результатах поиска появился хотя бы один элемент,
         содержащий 'location_name'. Получаем результат
@@ -71,7 +72,7 @@ class MapPage:
     # ----------------------------------------------------------------------
 
     @allure.step("Check non-existing location")
-    def check_location_is_not_found(self, location_name: str):
+    def check_location_is_not_found(self, location_name: str) -> bool:
         """
             Проверяет, что после ввода несуществующей локации появляется
             сообщение "Нет доступных вариантов".
@@ -90,7 +91,7 @@ class MapPage:
             return False
 
     @allure.step("Open DTP & AOU menu")
-    def open_dtp_aou_menu(self):
+    def open_dtp_aou_menu(self) -> bool:
         DTP_MENU_TITLE_LOCATOR = f"//span[@class='title_text' and text()=' ДТП и АОУ ']"
 
         try:
@@ -105,7 +106,7 @@ class MapPage:
             return False
 
     @allure.step("Verify DTP & AOU menu is visible")
-    def check_dtp_aou_menu_is_visible(self):
+    def check_dtp_aou_menu_is_visible(self) -> bool:
         """
         Проверяет видимость элементов меню. При неудаче выбрасывает AssertionError
         с детальным сообщением.
@@ -126,7 +127,7 @@ class MapPage:
                 logging.info("✅ Фильтр АОУ (Аварийно-опасные участки) виден.")
                 logging.info("✅ Оба фильтра 'ДТП и АОУ' видны. Проверка завершена.")
 
-                return
+                return True
 
             except TimeoutException:
                 assert False, "❌ Фильтр 'АОУ' не стал виден в течение таймаута."
@@ -134,28 +135,25 @@ class MapPage:
         except TimeoutException:
             assert False, "❌ Фильтр 'ДТП' не стал виден в течение таймаута."
 
-
     @allure.step("Turn on checkbox")
-    def turn_on_switcher(self, checkbox_name: str):
-        SWITCHER_LOCATOR = f"//*[@type='checkbox' and @id='{checkbox_name}']"
+    def turn_on_checkbox(self, checkbox_locator: tuple[str, str]) -> bool:
 
         try:
             self.waiter.until(
-                EC.visibility_of_element_located((By.XPATH, SWITCHER_LOCATOR))
+                EC.element_to_be_clickable(checkbox_locator)
             ).click()
             return True
 
         except TimeoutException:
-            logging.error(f"❌ Чекбокс не найден.")
+            logging.error(f"❌ Чекбокс/радиобаттон не найден.")
             return False
 
     @allure.step("Check attribute change from False to True")
-    def check_attribute_is_true(self, locator: tuple, attribute_name: str, expected_value: str = 'true'):
+    def check_attribute_is_true(self, locator: tuple[str, str], attribute_name: str, expected_value: str = 'true'):
         """
         Проверяет, что указанный атрибут элемента принимает ожидаемое строковое значение ('true').
         """
         try:
-            # Используем условие, которое проверяет наличие ожидаемого текста в атрибуте
             self.waiter.until(
                 EC.text_to_be_present_in_element_attribute(
                     locator,
@@ -168,15 +166,12 @@ class MapPage:
             return True
 
         except TimeoutException:
-            # Если ожидание истекло, элемент не принял нужное значение.
             element = self.driver.find_element(*locator)
             current_value = element.get_attribute(attribute_name)
-            logging.error(
-                f"❌ Атрибут '{attribute_name}' не изменился на '{expected_value}'. "
-                f"Текущее значение: '{current_value}'.")
-            return False
 
-
-
-
-
+            error_message = (
+                f"❌ ПРОВЕРКА НЕ ПРОШЛА: Атрибут '{attribute_name}' не изменился на '{expected_value}'. "
+                f"Текущее значение: '{current_value}'."
+            )
+            logging.error(error_message)
+            assert False, error_message

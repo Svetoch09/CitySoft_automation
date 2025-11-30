@@ -21,7 +21,7 @@ NEGATIVE_LOGIN_CASES = [
             (VALID_LOGIN, "", "Ошибка в логине или пароле"),
         ]
 
-@allure.parent_suite("Login page")
+@allure.parent_suite("UI tests")
 @allure.suite("Login to the system")
 @allure.description("Login to the system")
 class TestLoginPage:
@@ -30,7 +30,7 @@ class TestLoginPage:
     @allure.feature("Вход в систему")
     @allure.title("Успешный вход в систему")
     @allure.description(""" Ввод валидных логина и пароля, вход в систему""")
-    @allure.severity("CRITICAL")
+    @allure.severity("BLOCKER")
     @pytest.mark.positive
     def test_positive_login(self, driver, base_url,user_credentials):
         username, password = user_credentials
@@ -44,7 +44,7 @@ class TestLoginPage:
     @allure.feature("Вход в систему")
     @allure.title("Негативный вход")
     @allure.description("Проверка входа с невалидными данными")
-    @allure.severity("NORMAL")
+    @allure.severity("BLOCKER")
     @pytest.mark.parametrize(
         "username_input, password_input, description",
         NEGATIVE_LOGIN_CASES

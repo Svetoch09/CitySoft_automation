@@ -17,6 +17,7 @@ from pages.MapPage import MapPage
 load_dotenv()
 BASE_URL = os.getenv("BASE_URL")
 AUTH_URL = os.getenv("AUTH_URL_BASE")
+TEST_LOCATION = os.getenv("TEST_LOCATION")
 
 
 @pytest.fixture(scope="session")
@@ -31,6 +32,12 @@ def auth_url() -> str:
     if not AUTH_URL:
         pytest.fail("Переменная окружения AUTH_URL_BASE не установлена.")
     return AUTH_URL
+
+@pytest.fixture(scope="session")
+def test_location() -> str:
+    if not TEST_LOCATION:
+        pytest.fail("Переменная окружения TEST_LOCATION не установлена.")
+    return TEST_LOCATION
 
 
 @pytest.fixture(scope="session")
@@ -66,7 +73,7 @@ def driver(request) -> WebDriver:
     # Логика инициализации
     if driver_name == "chrome":
         chrome_options = ChromeOptions()
-
+        #chrome_options.add_argument("--headless=new")
         chrome_options.add_argument("--disable-notifications")
         chrome_options.add_argument("--disable-popup-blocking")
         chrome_options.add_experimental_option("excludeSwitches", ["enable-automation"])
@@ -83,6 +90,7 @@ def driver(request) -> WebDriver:
             options=chrome_options)
     elif driver_name == "ff" or driver_name == "firefox":
         firefox_options = FirefoxOptions()  # pytest --browser=ff
+        #firefox_options.add_argument("-headless")
         firefox_options.set_preference("signon.rememberSignons", False)
         driver = webdriver.Firefox(
             service=FirefoxService(GeckoDriverManager().install()),
@@ -118,7 +126,7 @@ def location_selected_map_page(logged_in_map_page) -> MapPage:
     """
         Выполняет вход, выбирает локацию и возвращает MapPage.
     """
-    location_for_tests = "Казань"
+    location_for_tests = os.getenv("TEST_LOCATION")
 
     map_page = logged_in_map_page
     map_page.input_location(location_for_tests)
