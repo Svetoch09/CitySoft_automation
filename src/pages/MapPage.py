@@ -1,12 +1,12 @@
-import allure
 import logging
 
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.common.by import By
+import allure
 from selenium.common.exceptions import TimeoutException
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.ui import WebDriverWait
 
-from data.map_locators import (
+from data.ui_map_page_locators import (
     LOGOUT_BUTTON,
     LOGIN_HEADER,
     INPUT_LOCATION_FIELD,

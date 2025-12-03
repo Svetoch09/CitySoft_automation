@@ -1,7 +1,7 @@
 import allure
 import pytest
 
-from data.checkbox_data import ALL_CHECKBOX_DATA
+from data.ui_checkbox_data import ALL_CHECKBOX_DATA
 
 ALL_MAIN_CHECKBOXES = list(ALL_CHECKBOX_DATA.keys())
 DTP_CHILDREN_CHECKBOXES = ALL_CHECKBOX_DATA["DTP"]["children"]
@@ -11,6 +11,7 @@ AOU_CHILDREN_RADIO = ALL_CHECKBOX_DATA["AOU"]["children"]
 @allure.parent_suite("UI tests")
 @allure.suite("Map page")
 @allure.description("Work with map page")
+@pytest.mark.ui
 class TestMapPage:
 
     @allure.id("Map-1")

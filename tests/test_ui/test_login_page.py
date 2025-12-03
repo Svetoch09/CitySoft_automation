@@ -1,12 +1,14 @@
 import allure
 import pytest
-from pages.LoginPage import LoginPage
-from data.login_data import NEGATIVE_LOGIN_CASES
+
+from data.ui_login_data import NEGATIVE_LOGIN_CASES
+from src.pages.LoginPage import LoginPage
 
 
 @allure.parent_suite("UI tests")
 @allure.suite("Login to the system")
 @allure.description("Login to the system")
+@pytest.mark.ui
 class TestLoginPage:
 
     @allure.id("Login-1")
@@ -15,12 +17,12 @@ class TestLoginPage:
     @allure.description(""" Ввод валидных логина и пароля, вход в систему""")
     @allure.severity("BLOCKER")
     @pytest.mark.positive
-    def test_positive_login(self, driver, map_url, user_credentials):
+    def test_positive_login(self, driver, base_url, user_credentials):
         username, password = user_credentials
-        login_page = LoginPage(driver, map_url)
+        login_page = LoginPage(driver, base_url)
         login_page.open()
         login_page.login(username, password)
-        login_page.wait_and_check_url(map_url)
+        login_page.wait_and_check_url(base_url)
 
     @allure.id("Login-2")
     @allure.feature("Вход в систему")
@@ -32,9 +34,9 @@ class TestLoginPage:
         NEGATIVE_LOGIN_CASES
     )
     @pytest.mark.negative
-    def test_negative_login(self, driver, map_url, auth_url, username_input,
+    def test_negative_login(self, driver, base_url, auth_url, username_input,
                             password_input, description):
-        login_page = LoginPage(driver, map_url)
+        login_page = LoginPage(driver, base_url)
         login_page.open()
         login_page.login(username_input, password_input)
         actual_msg = login_page.get_error_message_text()
