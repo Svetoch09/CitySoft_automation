@@ -1,8 +1,10 @@
 import allure
 import pytest
+from typing import Tuple, List, Union
 
-from data.ui_login_data import NEGATIVE_LOGIN_CASES
+from selenium.webdriver.remote.webdriver import WebDriver
 from src.pages.LoginPage import LoginPage
+from data.ui_login_data import NEGATIVE_LOGIN_CASES
 
 
 @allure.parent_suite("UI tests")
@@ -17,7 +19,18 @@ class TestLoginPage:
     @allure.description(""" Ввод валидных логина и пароля, вход в систему""")
     @allure.severity("BLOCKER")
     @pytest.mark.positive
-    def test_positive_login(self, driver, base_url, user_credentials):
+    def test_positive_login(
+            self,
+            driver: WebDriver,
+            base_url: str,
+            user_credentials: Tuple[str, str]) -> None:
+        """
+            Тест: успешный вход в систему с валидной авторизацией.
+            :param driver: Экземпляр WebDriver.
+            :param base_url: Базовый URL целевого приложения.
+            :param user_credentials: Кортеж (логин, пароль) валидного пользователя.
+            :return: None
+        """
         username, password = user_credentials
         login_page = LoginPage(driver, base_url)
         login_page.open()
@@ -30,12 +43,25 @@ class TestLoginPage:
     @allure.description("Проверка входа с невалидными данными")
     @allure.severity("BLOCKER")
     @pytest.mark.parametrize(
-        "username_input, password_input, description",
-        NEGATIVE_LOGIN_CASES
+        "username_input, password_input, description", NEGATIVE_LOGIN_CASES
     )
     @pytest.mark.negative
-    def test_negative_login(self, driver, base_url, auth_url, username_input,
-                            password_input, description):
+    def test_negative_login(
+        self,
+        driver: WebDriver,
+        base_url: str,
+        auth_url: str,
+        username_input: str,
+        password_input: str,
+        description) -> None:
+        """
+            Проверка входа в систему с невалидными или отсутствующими учетными данными.
+            :param driver: Экземпляр WebDriver.
+            :param base_url: URL целевого приложения.
+            :param auth_url: URL страницы авторизации.
+            :param username_input: Тестовое значение логина.
+            :param password_input: Тестовое значение пароля.
+        """
         login_page = LoginPage(driver, base_url)
         login_page.open()
         login_page.login(username_input, password_input)

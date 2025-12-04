@@ -30,3 +30,14 @@ def auth_url() -> str:
     if not auth_url:
         pytest.fail("Переменная окружения AUTH_URL не установлена.")
     return auth_url
+
+
+@pytest.fixture(scope="session")
+def user_credentials() -> tuple[str, str]:
+    """Фикстура, предоставляющая кортеж (логин, пароль)."""
+    login = os.getenv("TEST_LOGIN")
+    password = os.getenv("TEST_PASSWORD")
+
+    if not login or not password:
+        pytest.fail("Переменные окружения TEST_LOGIN или TEST_PASSWORD не установлены.")
+    return login, password  # Возвращаем кортеж (username, password)

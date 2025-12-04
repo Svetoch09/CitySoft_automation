@@ -5,7 +5,6 @@ Test automation
 - pytest
 - selenium
 - requests
-- _sqlalchemy_
 - allure
 - config
 
@@ -14,7 +13,7 @@ Test automation
 - ./tests/test_api - тесты API
 - ./src/pages - описание страниц
 - ./src/api - хелперы для работы с API
-- ./data - тестовые данные 
+- ./data - тестовые данные и локаторы
 
 ### Полезные ссылки
 - [Подсказка по markdown](https://www.markdownguide.org/basic-syntax/)

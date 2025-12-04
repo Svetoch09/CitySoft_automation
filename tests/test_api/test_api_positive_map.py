@@ -1,6 +1,9 @@
 import pytest
 import allure
+
 from data.api_dtp_data import DTP_FILTER_SCENARIOS
+from src.api.DTPService import DTPService
+from src.api.UserService import UserService
 
 
 @allure.parent_suite("API tests")
@@ -15,10 +18,11 @@ class TestApiMapPage:
     @allure.title("Успешное получение UserInfo")
     @allure.description("Проверка статуса 200 и базовой схемы UserInfo.")
     @allure.severity("NORMAL")
-    def test_get_userinfo_success(self, user_service):
+    def test_get_userinfo_success(self, user_service: UserService) -> None:
         """
-        Тест: успешное получение информации о пользователе с валидной авторизацией.
-        Использует шаги из UserService.
+            Тест: успешное получение информации о
+            пользователе с валидной авторизацией.
+            :param user_service: Фикстура сервиса UserService.
         """
         response = user_service.get_user_info()
 
@@ -33,16 +37,26 @@ class TestApiMapPage:
     @allure.id("API-Map-1")
     @allure.feature("Фильтрация данных ДТП")
     @allure.title("Проверка различных сценариев фильтрации")
-    @allure.description("Проверка активации булевых фильтров ДТП, проверка статуса 200 ")
+    @allure.description(
+        "Проверка активации булевых фильтров ДТП, проверка статуса 200 "
+    )
     @allure.severity("CRITICAL")
-    @pytest.mark.parametrize("filter_key, filter_value, scenario_description",
-        DTP_FILTER_SCENARIOS)
-    def test_dtp_filter_scenarios(self, map_service, dtp_base_body, filter_key,
-                                  filter_value, scenario_description):
+    @pytest.mark.parametrize(
+        "filter_key, filter_value, scenario_description", DTP_FILTER_SCENARIOS
+    )
+    def test_dtp_filter_scenarios(
+            self,
+            map_service: DTPService,
+            dtp_base_body: Dict[str, Any],
+            filter_key: str,
+            filter_value: Any,
+            scenario_description: str) -> None:
         """
-        Тест проверяет базовую структуру, а затем различные булевы фильтры DTP.
-        :param filter_key: Имя поля, которое нужно изменить.
-        :param filter_value: Новое булево значение.
+            Тест проверяет базовую структуру, а затем различные фильтры DTP.
+            :param map_service: Фикстура сервиса DTPService.
+            :param dtp_base_body: Тело запроса, содержащее базовые фильтры.
+            :param filter_key: Имя поля, которое нужно изменить.
+            :param filter_value: Новое булево значение.
         """
         allure.dynamic.title(f"Проверка фильтра: {scenario_description}")
         if filter_key != "BASE_SCENARIO":
@@ -50,7 +64,8 @@ class TestApiMapPage:
 
         url_end = "/all/by_filters"
 
-        response = map_service.search_dtp_data_by_filters(url_end, dtp_base_body)
+        response = map_service.search_dtp_data_by_filters(
+            url_end, dtp_base_body)
 
         map_service.check_status_code(response)
         map_service.check_content_type_json(response)
@@ -63,12 +78,21 @@ class TestApiMapPage:
     @allure.id("API-Map-2")
     @allure.feature("Чтение данных по ID")
     @allure.title("Получение расширенной информации о ДТП по ID")
-    @allure.description("Проверка успешного получения детальной карточки "
-                        "ДТП и валидация возвращенного ID.Проверка статуса 200 ")
+    @allure.description(
+        "Проверка успешного получения детальной карточки "
+        "ДТП и валидация возвращенного ID.Проверка статуса 200 "
+    )
     @allure.severity("CRITICAL")
     @pytest.mark.parametrize("dtp_id", ["221001235"])
-    def test_get_dtp_info_by_id(self, map_service, dtp_id):
-        allure.dynamic.title(f"Получение расширенной информации о ДТП по ID: {dtp_id}")
+    def test_get_dtp_info_by_id(self, map_service: DTPService,
+                                dtp_id: str) -> None:
+        """
+            Успешное получение информации о ДТП по id.
+            :param map_service: Фикстура сервиса DTPService.
+            :param dtp_id: Параметризованный ID карточки ДТП.
+        """
+        allure.dynamic.title(f"Получение расширенной"
+                             f" информации о ДТП по ID: {dtp_id}")
 
         url_end = "/all/extended_info/"
         response = map_service.get_dtp_by_id(url_end, dtp_id)
