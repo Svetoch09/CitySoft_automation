@@ -85,6 +85,10 @@ pytest --reruns N
 ```bash
 pytest -n N
 ```
+Запустить тесты N раз:
+```bash
+pytest --count N
+```
 
 #### в. Генерация Отчетов Allure
 Очистка старых данных и генерация нового HTML-отчета
