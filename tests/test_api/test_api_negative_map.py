@@ -3,6 +3,7 @@ import pytest
 
 from data.api_dtp_data import DTP_NEGATIVE_SCENARIOS
 from src.api.DTPService import DTPService
+from typing import Dict, Any
 
 
 @allure.parent_suite("API tests")
@@ -61,9 +62,12 @@ class TestApiMapPageNegative:
         "на несуществующую карточку ДТП.")
     @allure.severity("BLOCKER")
     @pytest.mark.parametrize("dtp_id", ["22100123500"])
-    def test_get_dtp_info_by_wrong_id(self, map_service: DTPService, dtp_id: str) -> None:
+    def test_get_dtp_info_by_wrong_id(self,
+                                      map_service: DTPService,
+                                      dtp_id: str) -> None:
         """
-            Проверка корректной обработки запроса на несуществующую карточку ДТП.
+            Проверка корректной обработки запроса на
+            несуществующую карточку ДТП.
             Ожидается HTTP 200 с сообщением об ошибке в теле.
             :param map_service: Фикстура сервиса DTPService.
             :param dtp_id: Несуществующий ID для запроса.

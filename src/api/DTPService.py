@@ -69,7 +69,7 @@ class DTPService(BaseApiClient):
     def check_data_in_response(self, response_data: dict,
                                expected_data: str) -> None:
         """
-            Проверяет, данные возвращенные в теле ответа, совпадают с ожидаемыми
+            Проверяет, данные возвращенные в теле ответа
             :param response_data: Словарь, содержащий JSON-ответ целиком.
             :param expected_data: Ожидаемое значение поля 'data'.
         """

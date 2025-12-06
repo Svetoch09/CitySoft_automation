@@ -1,6 +1,6 @@
 import allure
 import pytest
-from typing import Tuple, List, Union
+from typing import Tuple
 
 from selenium.webdriver.remote.webdriver import WebDriver
 from src.pages.LoginPage import LoginPage
@@ -20,16 +20,14 @@ class TestLoginPage:
     @allure.severity("BLOCKER")
     @pytest.mark.positive
     def test_positive_login(
-            self,
-            driver: WebDriver,
-            base_url: str,
-            user_credentials: Tuple[str, str]) -> None:
+        self, driver: WebDriver, base_url: str, user_credentials: Tuple[str, str]
+    ) -> None:
         """
-            Тест: успешный вход в систему с валидной авторизацией.
-            :param driver: Экземпляр WebDriver.
-            :param base_url: Базовый URL целевого приложения.
-            :param user_credentials: Кортеж (логин, пароль) валидного пользователя.
-            :return: None
+        Тест: успешный вход в систему с валидной авторизацией.
+        :param driver: Экземпляр WebDriver.
+        :param base_url: Базовый URL целевого приложения.
+        :param user_credentials: Кортеж (логин, пароль)
+        валидного пользователя.
         """
         username, password = user_credentials
         login_page = LoginPage(driver, base_url)
@@ -53,14 +51,16 @@ class TestLoginPage:
         auth_url: str,
         username_input: str,
         password_input: str,
-        description) -> None:
+        description,
+    ) -> None:
         """
-            Проверка входа в систему с невалидными или отсутствующими учетными данными.
-            :param driver: Экземпляр WebDriver.
-            :param base_url: URL целевого приложения.
-            :param auth_url: URL страницы авторизации.
-            :param username_input: Тестовое значение логина.
-            :param password_input: Тестовое значение пароля.
+        Проверка входа в систему с невалидными или
+        отсутствующими учетными данными.
+        :param driver: Экземпляр WebDriver.
+        :param base_url: URL целевого приложения.
+        :param auth_url: URL страницы авторизации.
+        :param username_input: Тестовое значение логина.
+        :param password_input: Тестовое значение пароля.
         """
         login_page = LoginPage(driver, base_url)
         login_page.open()

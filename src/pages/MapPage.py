@@ -3,7 +3,6 @@ import logging
 import allure
 from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.common.by import By
-from selenium.webdriver.remote.webdriver import WebDriver
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 
@@ -98,7 +97,6 @@ class MapPage:
         location_name = location_name.lower().title()
         search_field.send_keys(location_name)
 
-
     @allure.step("Check location is found")
     def check_location_is_found(self, location_name: str) -> str:
         """
@@ -135,7 +133,6 @@ class MapPage:
                 f" НЕ найдены в течение таймаута."
             )
             return "Not found"
-
 
     @allure.step("Check non-existing location is not found")
     def check_location_is_not_found(self,

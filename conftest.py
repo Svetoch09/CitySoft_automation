@@ -39,5 +39,6 @@ def user_credentials() -> tuple[str, str]:
     password = os.getenv("TEST_PASSWORD")
 
     if not login or not password:
-        pytest.fail("Переменные окружения TEST_LOGIN или TEST_PASSWORD не установлены.")
+        pytest.fail("Переменные окружения TEST_LOGIN "
+                    "или TEST_PASSWORD не установлены.")
     return login, password  # Возвращаем кортеж (username, password)

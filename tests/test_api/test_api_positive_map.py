@@ -4,6 +4,7 @@ import allure
 from data.api_dtp_data import DTP_FILTER_SCENARIOS
 from src.api.DTPService import DTPService
 from src.api.UserService import UserService
+from typing import Dict, Any
 
 
 @allure.parent_suite("API tests")
