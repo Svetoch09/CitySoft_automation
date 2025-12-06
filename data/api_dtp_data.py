@@ -39,7 +39,7 @@ DTP_NEGATIVE_SCENARIOS = [
     ("areaFilterParams", "Kazan", "Неверные данные"),
     ("zonedDateFilterParams",
         {"dateFrom": "2019-12-31T23:00:00", "dateTo": "2020-12-31T22:59:59"},
-        "Неверный формат веремени",),
+        "Неверный формат веремени"),
     ("withDeadOrNot", "Yes", "Неверные данные"),
     ("withDeadOrNot", 123, "Неверный формат данных"),
 ]
